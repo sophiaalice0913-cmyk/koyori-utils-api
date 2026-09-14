@@ -213,6 +213,30 @@ Example result:
   "result": "hello-world"
 }
 ```
+### Random String / Integer Generation
+
+`POST /api/random`
+
+Generates a random alphanumeric string or a random integer within a specified range.
+
+Random string example:
+
+```json
+{
+  "type": "string",
+  "length": 12
+}
+```
+
+Random integer example:
+
+```json
+{
+  "type": "integer",
+  "min": 1,
+  "max": 100
+}
+```
 ## Payment
 
 Paid endpoints use x402.
