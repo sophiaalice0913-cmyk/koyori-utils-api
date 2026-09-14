@@ -100,7 +100,29 @@ Example response:
   "uuid": "550e8400-e29b-41d4-a716-446655440000"
 }
 ```
+### Base64 Encode / Decode
 
+`POST /api/base64`
+
+Encodes UTF-8 text to Base64 or decodes Base64 back to UTF-8 text.
+
+Encode example:
+
+```json
+{
+  "action": "encode",
+  "text": "hello"
+}
+```
+
+Decode example:
+
+```json
+{
+  "action": "decode",
+  "text": "aGVsbG8="
+}
+```
 ## Payment
 
 Paid endpoints use x402.
