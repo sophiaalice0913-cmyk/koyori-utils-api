@@ -75,6 +75,7 @@ app.get('/', (c) => {
       <li><code>POST /api/count</code> - Character, word, and byte counting</li>
       <li><code>POST /api/uuid</code> - UUID v4 generation</li>
       <li><code>POST /api/base64</code> - Base64 encode / decode</li>
+      <li><code>POST /api/url-encode</code> - URL encode / decode</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -280,6 +281,58 @@ app.post('/api/base64',
     } catch {
       return c.json(
         { success: false, error: 'Invalid Base64 input.' },
+        400
+      );
+    }
+  }
+);
+// Encodes and decodes URL components (tier: simple)
+app.post('/api/url-encode',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if ((action !== 'encode' && action !== 'decode') || typeof text !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: "Use action 'encode' or 'decode' and provide a string 'text'."
+        },
+        400
+      );
+    }
+
+    try {
+      const result =
+        action === 'encode'
+          ? encodeURIComponent(text)
+          : decodeURIComponent(text);
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Invalid URL-encoded input.' },
         400
       );
     }
