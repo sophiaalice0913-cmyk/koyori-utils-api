@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "koyori-utils-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-14",
+  "compatibility_flags": ["nodejs_compat_v2"],
+  "workers_dev": true,
+  "vars": {
+    "NETWORK": "mainnet",
+    "RELAY_URL": "https://x402-relay.aibtc.com"
+  },
+  "env": {
+    "staging": {
+      "name": "koyori-utils-api-staging",
+      "workers_dev": true,
+      "vars": {
+        "NETWORK": "testnet",
+        "RELAY_URL": "https://x402-relay.aibtc.dev"
+      }
+    },
+    "production": {
+      "name": "koyori-utils-api",
+      "workers_dev": true,
+      "vars": {
+        "NETWORK": "mainnet",
+        "RELAY_URL": "https://x402-relay.aibtc.com"
+      }
+    }
+  }
+}
