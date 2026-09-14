@@ -18,10 +18,19 @@ The API is deployed and live on mainnet:
 Generates a secure SHA-256 hash of the provided input string.
 
 **Illustrative Request (returns HTTP 402 Payment Required):**
+
 ```bash
 curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/hash \
   -H "Content-Type: application/json" \
-  -d '{"text": "hello"}'
+  -d '{"text":"hello"}'
+```
+
+**Example body:**
+
+```json
+{
+  "text": "hello"
+}
 ```
 
 ### 2. JSON Formatting (`/api/format`)
@@ -50,36 +59,41 @@ Example body:
 {
   "text": "hello"
 }
-JSON Formatting
+```
 
-POST /api/format
+### JSON Formatting
+
+`POST /api/format`
 
 Example body:
 
+```json
 {
   "jsonString": "{\"key\":\"value\"}"
 }
-Payment
+```
+
+## Payment
 
 Paid endpoints use x402.
 
 Requests without a valid payment return:
 
-HTTP 402 Payment Required
+`HTTP 402 Payment Required`
 
 The response contains the current payment requirements, including the recipient address, required amount, network, and token type.
 
 Current price:
 
-0.001 STX per request
+**0.001 STX per request**
 
-Health Check
+## Health Check
 
-GET /health
+`GET /health`
 
 Returns the current service status.
 
-Source
+## Source
 
 Live service:
 
