@@ -192,6 +192,27 @@ ISO to Unix example:
   "value": "2025-09-15T00:00:00.000Z"
 }
 ```
+### URL-Friendly Slug Generation
+
+`POST /api/slug`
+
+Converts text into a lowercase, URL-friendly slug.
+
+Example:
+
+```json
+{
+  "text": "Hello World!"
+}
+```
+
+Example result:
+
+```json
+{
+  "result": "hello-world"
+}
+```
 ## Payment
 
 Paid endpoints use x402.
