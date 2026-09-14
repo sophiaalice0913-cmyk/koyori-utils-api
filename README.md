@@ -72,7 +72,19 @@ Example body:
   "jsonString": "{\"key\":\"value\"}"
 }
 ```
+### Character / Word / Byte Count
 
+`POST /api/count`
+
+Example body:
+
+```json
+{
+  "text": "hello world"
+}
+```
+
+Returns the number of characters, words, and UTF-8 bytes in the provided text.
 ## Payment
 
 Paid endpoints use x402.
