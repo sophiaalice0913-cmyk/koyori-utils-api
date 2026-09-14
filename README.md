@@ -146,6 +146,29 @@ Decode example:
   "text": "hello%20world"
 }
 ```
+### Hex Encode / Decode
+
+`POST /api/hex`
+
+Encodes UTF-8 text to hexadecimal or decodes hexadecimal back to UTF-8 text.
+
+Encode example:
+
+```json
+{
+  "action": "encode",
+  "text": "hello"
+}
+```
+
+Decode example:
+
+```json
+{
+  "action": "decode",
+  "text": "68656c6c6f"
+}
+```
 ## Payment
 
 Paid endpoints use x402.
