@@ -78,6 +78,7 @@ app.get('/', (c) => {
       <li><code>POST /api/url-encode</code> - URL encode / decode</li>
       <li><code>POST /api/hex</code> - Hex encode / decode</li>
       <li><code>POST /api/timestamp</code> - Unix / ISO timestamp conversion</li>
+      <li><code>POST /api/slug</code> - URL-friendly slug generation</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -480,6 +481,46 @@ app.post('/api/timestamp',
         400
       );
     }
+  }
+);
+// Converts text into a URL-friendly slug (tier: simple)
+app.post('/api/slug',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if (typeof text !== 'string') {
+      return c.json(
+        { success: false, error: "Provide a string 'text'." },
+        400
+      );
+    }
+
+    const result = text
+      .normalize('NFKD')
+      .toLowerCase()
+      .trim()
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return c.json({
+      success: true,
+      result,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
   }
 );
 export default app;
