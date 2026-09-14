@@ -85,6 +85,22 @@ Example body:
 ```
 
 Returns the number of characters, words, and UTF-8 bytes in the provided text.
+
+### UUID v4 Generation
+
+`POST /api/uuid`
+
+Generates a random UUID v4 identifier.
+
+Example response:
+
+```json
+{
+  "success": true,
+  "uuid": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
 ## Payment
 
 Paid endpoints use x402.
