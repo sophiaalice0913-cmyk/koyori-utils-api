@@ -73,6 +73,7 @@ app.get('/', (c) => {
       <li><code>POST /api/hash</code> - SHA-256 hashing</li>
       <li><code>POST /api/format</code> - JSON formatting</li>
       <li><code>POST /api/count</code> - Character, word, and byte counting</li>
+      <li><code>POST /api/uuid</code> - UUID v4 generation</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -200,5 +201,25 @@ app.post('/api/count',
     });
   }
 );
+// Generates a UUID v4 (tier: simple)
+app.post('/api/uuid',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
 
+    const uuid = crypto.randomUUID();
+
+    return c.json({
+      success: true,
+      uuid,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
+  }
+);
 export default app;
