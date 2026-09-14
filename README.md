@@ -123,6 +123,29 @@ Decode example:
   "text": "aGVsbG8="
 }
 ```
+### URL Encode / Decode
+
+`POST /api/url-encode`
+
+Encodes text for safe use inside a URL component or decodes URL-encoded text back to its original form.
+
+Encode example:
+
+```json
+{
+  "action": "encode",
+  "text": "hello world"
+}
+```
+
+Decode example:
+
+```json
+{
+  "action": "decode",
+  "text": "hello%20world"
+}
+```
 ## Payment
 
 Paid endpoints use x402.
