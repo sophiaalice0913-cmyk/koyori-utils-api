@@ -76,6 +76,7 @@ app.get('/', (c) => {
       <li><code>POST /api/uuid</code> - UUID v4 generation</li>
       <li><code>POST /api/base64</code> - Base64 encode / decode</li>
       <li><code>POST /api/url-encode</code> - URL encode / decode</li>
+      <li><code>POST /api/hex</code> - Hex encode / decode</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -333,6 +334,75 @@ app.post('/api/url-encode',
     } catch {
       return c.json(
         { success: false, error: 'Invalid URL-encoded input.' },
+        400
+      );
+    }
+  }
+);
+// Encodes and decodes UTF-8 text using hexadecimal (tier: simple)
+app.post('/api/hex',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if ((action !== 'encode' && action !== 'decode') || typeof text !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: "Use action 'encode' or 'decode' and provide a string 'text'."
+        },
+        400
+      );
+    }
+
+    try {
+      let result: string;
+
+      if (action === 'encode') {
+        const bytes = new TextEncoder().encode(text);
+        result = Array.from(bytes)
+          .map((byte) => byte.toString(16).padStart(2, '0'))
+          .join('');
+      } else {
+        if (text.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(text)) {
+          return c.json(
+            { success: false, error: 'Invalid hexadecimal input.' },
+            400
+          );
+        }
+
+        const bytes = new Uint8Array(
+          text.match(/.{2}/g)?.map((pair) => parseInt(pair, 16)) ?? []
+        );
+
+        result = new TextDecoder().decode(bytes);
+      }
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Hex conversion failed.' },
         400
       );
     }
