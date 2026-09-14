@@ -36,121 +36,55 @@ curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/format \
 
 ## Quick Start
 
-```bash
-# Install dependencies
-npm install
+### Live API
 
-# Set your recipient address for local dev
-# Edit .dev.vars and replace YOUR_STACKS_ADDRESS_HERE with your address
+https://koyori-utils-api.koyori-aibtc.workers.dev
 
-# Start local dev server
-npm run dev
-```
+### SHA-256 Hashing
 
-The server will start at http://localhost:8787
+`POST /api/hash`
 
-## Payment Tokens
+Example body:
 
-This API accepts payments in:
-- STX
+```json
+{
+  "text": "hello"
+}
+JSON Formatting
 
-## Endpoints
+POST /api/format
 
-### GET /
-- **Description:** Service info
-- **Cost:** Free
+Example body:
 
-### GET /health
-- **Description:** Health check endpoint
-- **Cost:** Free
+{
+  "jsonString": "{\"key\":\"value\"}"
+}
+Payment
 
-### POST /api/hash
-- **Description:** Generates a secure SHA-256 hash of the input string
-- **Cost:** 0.001 STX (tier: simple)
-- **Payment Required:** Yes
+Paid endpoints use x402.
 
-### POST /api/format
-- **Description:** Validates and beautifies JSON strings
-- **Cost:** 0.001 STX (tier: simple)
-- **Payment Required:** Yes
+Requests without a valid payment return:
 
-## Deployment
+HTTP 402 Payment Required
 
-### Set Production Secrets
+The response contains the current payment requirements, including the recipient address, required amount, network, and token type.
 
-```bash
-# Set your recipient address (where payments will be sent)
-wrangler secret put RECIPIENT_ADDRESS
-# Enter: SP3SMA15KHE45J6XABS1VXC2VX3HHZGHMAWNYKM5A
-```
+Current price:
 
-### Deploy
+0.001 STX per request
 
-```bash
-# Deploy to staging (testnet)
-npm run deploy:staging
+Health Check
 
-# Deploy to production (mainnet)
-npm run deploy:production
-```
+GET /health
 
-## x402 Payment Flow
+Returns the current service status.
 
-1. Client makes request without payment header
-2. Server returns HTTP 402 with payment requirements:
-   ```json
-   {
-     "maxAmountRequired": "1000",
-     "resource": "/api/endpoint",
-     "payTo": "SP3SMA15KHE45J6XABS1VXC2VX3HHZGHMAWNYKM5A",
-     "network": "testnet",
-     "tokenType": "STX",
-     "nonce": "uuid",
-     "expiresAt": "2024-01-01T00:05:00Z"
-   }
-   ```
-3. Client signs payment transaction (does NOT broadcast)
-4. Client retries request with `X-PAYMENT` header containing signed tx
-5. Server verifies and settles payment via relay
-6. Server returns actual response
+Source
 
-## Testing with curl
+Live service:
 
-```bash
-# Service info (free)
-curl http://localhost:8787/
+https://koyori-utils-api.koyori-aibtc.workers.dev
 
-# Health check (free)
-curl http://localhost:8787/health
+GitHub:
 
-# Protected endpoint (returns 402)
-curl http://localhost:8787/api/hash
-```
-
-## Token Type Selection
-
-Clients can specify which token to pay with using the `X-PAYMENT-TOKEN-TYPE` header:
-
-```bash
-# Pay with sBTC instead of STX
-curl -H "X-PAYMENT-TOKEN-TYPE: sBTC" http://localhost:8787/api/hash
-```
-
-Supported values: `STX`, `sBTC`, `USDCx`
-
-## Error Codes
-
-The API returns structured error responses for payment failures:
-
-| Code | Description | HTTP Status |
-|------|-------------|-------------|
-| `INSUFFICIENT_FUNDS` | Wallet needs funding | 402 |
-| `PAYMENT_EXPIRED` | Sign a new payment | 402 |
-| `AMOUNT_TOO_LOW` | Payment below minimum | 402 |
-| `PAYMENT_INVALID` | Bad signature/params | 400 |
-| `NETWORK_ERROR` | Transient error | 502 |
-| `RELAY_UNAVAILABLE` | Try again later | 503 |
-
----
-
-Generated with [@aibtc/mcp-server](https://www.npmjs.com/package/@aibtc/mcp-server) scaffold tool.
+https://github.com/sophiaalice0913-cmyk/koyori-utils-api
