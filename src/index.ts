@@ -54,16 +54,31 @@ app.use('*', async (c, next) => {
 
 // Service info at root (free)
 app.get('/', (c) => {
-  return c.json({
-    service: 'x402-api',
-    version: '1.0.0',
-    health: '/health',
-    payment: {
-      tokens: ['STX', 'sBTC', 'USDCx'],
-      header: 'X-PAYMENT',
-      tokenTypeHeader: 'X-PAYMENT-TOKEN-TYPE',
-    },
-  });
+  return c.html(`
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Koyori Utils API</title>
+</head>
+<body>
+  <main>
+    <h1>Koyori Utils API</h1>
+    <p>Live x402 utility API on Stacks mainnet.</p>
+    <p><strong>Price:</strong> 0.001 STX per request</p>
+
+    <h2>Endpoints</h2>
+    <ul>
+      <li><code>POST /api/hash</code> — SHA-256 hashing</li>
+      <li><code>POST /api/format</code> — JSON formatting</li>
+    </ul>
+
+    <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
+  </main>
+</body>
+</html>
+  `);
 });
 
 // Health check (free)
