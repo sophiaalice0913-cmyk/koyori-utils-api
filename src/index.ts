@@ -77,6 +77,7 @@ app.get('/', (c) => {
       <li><code>POST /api/base64</code> - Base64 encode / decode</li>
       <li><code>POST /api/url-encode</code> - URL encode / decode</li>
       <li><code>POST /api/hex</code> - Hex encode / decode</li>
+      <li><code>POST /api/timestamp</code> - Unix / ISO timestamp conversion</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -403,6 +404,79 @@ app.post('/api/hex',
     } catch {
       return c.json(
         { success: false, error: 'Hex conversion failed.' },
+        400
+      );
+    }
+  }
+);
+// Converts Unix timestamps and ISO date strings (tier: simple)
+app.post('/api/timestamp',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const value =
+      typeof body === 'object' && body !== null && 'value' in body
+        ? (body as Record<string, unknown>).value
+        : undefined;
+
+    try {
+      let result: string | number;
+
+      if (action === 'to-iso') {
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
+          return c.json(
+            { success: false, error: "For 'to-iso', provide numeric 'value' in Unix seconds." },
+            400
+          );
+        }
+
+        result = new Date(value * 1000).toISOString();
+      } else if (action === 'to-unix') {
+        if (typeof value !== 'string') {
+          return c.json(
+            { success: false, error: "For 'to-unix', provide ISO date string 'value'." },
+            400
+          );
+        }
+
+        const timestamp = Date.parse(value);
+
+        if (Number.isNaN(timestamp)) {
+          return c.json(
+            { success: false, error: 'Invalid ISO date string.' },
+            400
+          );
+        }
+
+        result = Math.floor(timestamp / 1000);
+      } else {
+        return c.json(
+          { success: false, error: "Use action 'to-iso' or 'to-unix'." },
+          400
+        );
+      }
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Timestamp conversion failed.' },
         400
       );
     }
