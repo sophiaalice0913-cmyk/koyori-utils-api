@@ -70,8 +70,9 @@ app.get('/', (c) => {
 
     <h2>Endpoints</h2>
     <ul>
-      <li><code>POST /api/hash</code> — SHA-256 hashing</li>
-      <li><code>POST /api/format</code> — JSON formatting</li>
+      <li><code>POST /api/hash</code> - SHA-256 hashing</li>
+      <li><code>POST /api/format</code> - JSON formatting</li>
+      <li><code>POST /api/count</code> - Character, word, and byte counting</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -155,6 +156,48 @@ app.post('/api/format',
     } catch (err: any) {
       return c.json({ success: false, error: "Invalid JSON format: " + err.message }, 400);
     }
+  }
+);
+
+
+// Counts characters, words, and UTF-8 bytes (tier: simple)
+app.post('/api/count',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const text =
+      typeof body === 'object' &&
+      body !== null &&
+      'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if (typeof text !== 'string') {
+      return c.json(
+        { success: false, error: "Missing or invalid 'text' parameter." },
+        400
+      );
+    }
+
+    const characters = Array.from(text).length;
+    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/u).length;
+    const bytes = new TextEncoder().encode(text).length;
+
+    return c.json({
+      success: true,
+      characters,
+      words,
+      bytes,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
   }
 );
 
