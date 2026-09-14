@@ -79,6 +79,7 @@ app.get('/', (c) => {
       <li><code>POST /api/hex</code> - Hex encode / decode</li>
       <li><code>POST /api/timestamp</code> - Unix / ISO timestamp conversion</li>
       <li><code>POST /api/slug</code> - URL-friendly slug generation</li>
+      <li><code>POST /api/random</code> - Random string / integer generation</li>
     </ul>
 
     <p><a href="https://github.com/sophiaalice0913-cmyk/koyori-utils-api">View source on GitHub</a></p>
@@ -521,6 +522,113 @@ app.post('/api/slug',
         sender: payment?.payerAddress,
       },
     });
+  }
+);
+// Generates random strings or integers (tier: simple)
+app.post('/api/random',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const type =
+      typeof body === 'object' && body !== null && 'type' in body
+        ? (body as Record<string, unknown>).type
+        : undefined;
+
+    if (type === 'string') {
+      const length =
+        typeof body === 'object' && body !== null && 'length' in body
+          ? (body as Record<string, unknown>).length
+          : undefined;
+
+      if (
+        typeof length !== 'number' ||
+        !Number.isInteger(length) ||
+        length < 1 ||
+        length > 256
+      ) {
+        return c.json(
+          { success: false, error: "For type 'string', length must be an integer from 1 to 256." },
+          400
+        );
+      }
+
+      const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const random = new Uint32Array(length);
+      crypto.getRandomValues(random);
+
+      const result = Array.from(random)
+        .map((value) => chars[value % chars.length])
+        .join('');
+
+      return c.json({
+        success: true,
+        type,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    }
+
+    if (type === 'integer') {
+      const min =
+        typeof body === 'object' && body !== null && 'min' in body
+          ? (body as Record<string, unknown>).min
+          : undefined;
+      const max =
+        typeof body === 'object' && body !== null && 'max' in body
+          ? (body as Record<string, unknown>).max
+          : undefined;
+
+      if (
+        typeof min !== 'number' ||
+        typeof max !== 'number' ||
+        !Number.isInteger(min) ||
+        !Number.isInteger(max) ||
+        min > max
+      ) {
+        return c.json(
+          { success: false, error: "For type 'integer', provide integer 'min' and 'max' with min <= max." },
+          400
+        );
+      }
+
+      const range = max - min + 1;
+
+      if (range <= 0 || range > 4294967296) {
+        return c.json(
+          { success: false, error: 'Integer range is too large.' },
+          400
+        );
+      }
+
+      const random = new Uint32Array(1);
+      crypto.getRandomValues(random);
+
+      const result = min + (random[0] % range);
+
+      return c.json({
+        success: true,
+        type,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    }
+
+    return c.json(
+      { success: false, error: "Use type 'string' or 'integer'." },
+      400
+    );
   }
 );
 export default app;
