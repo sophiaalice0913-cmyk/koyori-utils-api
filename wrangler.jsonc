@@ -21,6 +21,10 @@
     "production": {
       "name": "koyori-utils-api",
       "workers_dev": true,
+"observability": {
+  "enabled": true,
+  "head_sampling_rate": 1
+},
       "vars": {
         "NETWORK": "mainnet",
         "RELAY_URL": "https://x402-relay.aibtc.com"
