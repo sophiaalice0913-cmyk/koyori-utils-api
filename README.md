@@ -169,6 +169,29 @@ Decode example:
   "text": "68656c6c6f"
 }
 ```
+### Unix / ISO Timestamp Conversion
+
+`POST /api/timestamp`
+
+Converts Unix timestamps in seconds to ISO date strings, or ISO date strings to Unix timestamps.
+
+Unix to ISO example:
+
+```json
+{
+  "action": "to-iso",
+  "value": 1757894400
+}
+```
+
+ISO to Unix example:
+
+```json
+{
+  "action": "to-unix",
+  "value": "2025-09-15T00:00:00.000Z"
+}
+```
 ## Payment
 
 Paid endpoints use x402.
