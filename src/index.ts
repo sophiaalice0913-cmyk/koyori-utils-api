@@ -450,4 +450,33 @@ app.get('/health', (c) => {
     network: c.env.NETWORK || 'testnet',
   });
 });
+// Public AIBTC agent metadata (free)
+app.get('/metadata.json', (c) => {
+  return c.json({
+    name: 'Somber Saber',
+    description:
+      'AIBTC agent providing lightweight x402-powered developer utilities on Stacks mainnet.',
+    website:
+      'https://koyori-utils-api.koyori-aibtc.workers.dev',
+    api_url:
+      'https://koyori-utils-api.koyori-aibtc.workers.dev',
+    services: [
+      'SHA-256 hashing',
+      'JSON formatting',
+      'Character, word, and byte counting',
+      'UUID v4 generation',
+      'Base64 encode/decode',
+      'URL encode/decode',
+      'Hex encode/decode',
+      'Unix/ISO timestamp conversion',
+      'URL-friendly slug generation',
+      'Random string/integer generation'
+    ],
+    payment: {
+      protocol: 'x402',
+      network: 'Stacks mainnet',
+      price: '0.001 STX per request'
+    }
+  });
+});
 export default app;
