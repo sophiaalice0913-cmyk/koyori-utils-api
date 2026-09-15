@@ -1,6 +1,23 @@
 # koyori-utils-api
+x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
 
-x402-enabled API endpoints on Cloudflare Workers.
+**Live API:** https://koyori-utils-api.koyori-aibtc.workers.dev  
+**Price:** 0.001 STX per paid request
+
+## Available Tools
+
+- SHA-256 hashing
+- JSON formatting
+- Character / word / byte counting
+- UUID v4 generation
+- Base64 encode / decode
+- URL encode / decode
+- Hex encode / decode
+- Unix / ISO timestamp conversion
+- URL-friendly slug generation
+- Random string / integer generation
+
+Built for developers, bots, and AI agents that need small utility functions with x402 payments.
 
 Built using patterns from:
 - [x402-api](https://github.com/aibtcdev/x402-api)
