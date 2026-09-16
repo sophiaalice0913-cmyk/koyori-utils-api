@@ -14,7 +14,7 @@ type Env = {
   RELAY_URL: string;
 };
 
-type Variables = {f
+type Variables = {
   x402?: X402Context;
 };
 
@@ -450,6 +450,541 @@ app.get('/health', (c) => {
     network: c.env.NETWORK || 'testnet',
   });
 });
+// Generates a secure SHA-256 hash of the input string (tier: simple)
+app.post('/api/hash',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    // Parse request body
+    const body = await c.req.json<Record<string, unknown>>().catch(() => ({} as Record<string, unknown>));
+    const text = body.text;
+
+    if (typeof text !== 'string') {
+      return c.json({ success: false, error: "Missing or invalid 'text' parameter." }, 400);
+    }
+
+    // Native Web Crypto API
+    const msgUint8 = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    return c.json({
+      success: true,
+      sha256: hashHex,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
+  }
+);
+
+// Validates and beautifies JSON strings (tier: simple)
+app.post('/api/format',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    // Parse request body
+    const body = await c.req.json<Record<string, unknown>>().catch(() => ({} as Record<string, unknown>));
+    const rawJsonString = body.jsonString;
+
+    if (typeof rawJsonString !== 'string') {
+      return c.json({ success: false, error: "Missing or invalid 'jsonString' parameter." }, 400);
+    }
+
+    try {
+      const parsedObj = JSON.parse(rawJsonString);
+      const formatted = JSON.stringify(parsedObj, null, 2);
+      return c.json({
+        success: true,
+        formatted,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch (err: any) {
+      return c.json({ success: false, error: "Invalid JSON format: " + err.message }, 400);
+    }
+  }
+);
+
+
+// Counts characters, words, and UTF-8 bytes (tier: simple)
+app.post('/api/count',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const text =
+      typeof body === 'object' &&
+      body !== null &&
+      'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if (typeof text !== 'string') {
+      return c.json(
+        { success: false, error: "Missing or invalid 'text' parameter." },
+        400
+      );
+    }
+
+    const characters = Array.from(text).length;
+    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/u).length;
+    const bytes = new TextEncoder().encode(text).length;
+
+    return c.json({
+      success: true,
+      characters,
+      words,
+      bytes,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
+  }
+);
+// Generates a UUID v4 (tier: simple)
+app.post('/api/uuid',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const uuid = crypto.randomUUID();
+
+    return c.json({
+      success: true,
+      uuid,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
+  }
+);
+// Encodes and decodes UTF-8 text using Base64 (tier: simple)
+app.post('/api/base64',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if ((action !== 'encode' && action !== 'decode') || typeof text !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: "Use action 'encode' or 'decode' and provide a string 'text'."
+        },
+        400
+      );
+    }
+
+    try {
+      let result: string;
+
+      if (action === 'encode') {
+        const bytes = new TextEncoder().encode(text);
+        let binary = '';
+        for (const byte of bytes) {
+          binary += String.fromCharCode(byte);
+        }
+        result = btoa(binary);
+      } else {
+        const binary = atob(text);
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+        result = new TextDecoder().decode(bytes);
+      }
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Invalid Base64 input.' },
+        400
+      );
+    }
+  }
+);
+// Encodes and decodes URL components (tier: simple)
+app.post('/api/url-encode',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if ((action !== 'encode' && action !== 'decode') || typeof text !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: "Use action 'encode' or 'decode' and provide a string 'text'."
+        },
+        400
+      );
+    }
+
+    try {
+      const result =
+        action === 'encode'
+          ? encodeURIComponent(text)
+          : decodeURIComponent(text);
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Invalid URL-encoded input.' },
+        400
+      );
+    }
+  }
+);
+// Encodes and decodes UTF-8 text using hexadecimal (tier: simple)
+app.post('/api/hex',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if ((action !== 'encode' && action !== 'decode') || typeof text !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: "Use action 'encode' or 'decode' and provide a string 'text'."
+        },
+        400
+      );
+    }
+
+    try {
+      let result: string;
+
+      if (action === 'encode') {
+        const bytes = new TextEncoder().encode(text);
+        result = Array.from(bytes)
+          .map((byte) => byte.toString(16).padStart(2, '0'))
+          .join('');
+      } else {
+        if (text.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(text)) {
+          return c.json(
+            { success: false, error: 'Invalid hexadecimal input.' },
+            400
+          );
+        }
+
+        const bytes = new Uint8Array(
+          text.match(/.{2}/g)?.map((pair) => parseInt(pair, 16)) ?? []
+        );
+
+        result = new TextDecoder().decode(bytes);
+      }
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Hex conversion failed.' },
+        400
+      );
+    }
+  }
+);
+// Converts Unix timestamps and ISO date strings (tier: simple)
+app.post('/api/timestamp',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const action =
+      typeof body === 'object' && body !== null && 'action' in body
+        ? (body as Record<string, unknown>).action
+        : undefined;
+    const value =
+      typeof body === 'object' && body !== null && 'value' in body
+        ? (body as Record<string, unknown>).value
+        : undefined;
+
+    try {
+      let result: string | number;
+
+      if (action === 'to-iso') {
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
+          return c.json(
+            { success: false, error: "For 'to-iso', provide numeric 'value' in Unix seconds." },
+            400
+          );
+        }
+
+        result = new Date(value * 1000).toISOString();
+      } else if (action === 'to-unix') {
+        if (typeof value !== 'string') {
+          return c.json(
+            { success: false, error: "For 'to-unix', provide ISO date string 'value'." },
+            400
+          );
+        }
+
+        const timestamp = Date.parse(value);
+
+        if (Number.isNaN(timestamp)) {
+          return c.json(
+            { success: false, error: 'Invalid ISO date string.' },
+            400
+          );
+        }
+
+        result = Math.floor(timestamp / 1000);
+      } else {
+        return c.json(
+          { success: false, error: "Use action 'to-iso' or 'to-unix'." },
+          400
+        );
+      }
+
+      return c.json({
+        success: true,
+        action,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    } catch {
+      return c.json(
+        { success: false, error: 'Timestamp conversion failed.' },
+        400
+      );
+    }
+  }
+);
+// Converts text into a URL-friendly slug (tier: simple)
+app.post('/api/slug',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const text =
+      typeof body === 'object' && body !== null && 'text' in body
+        ? (body as Record<string, unknown>).text
+        : undefined;
+
+    if (typeof text !== 'string') {
+      return c.json(
+        { success: false, error: "Provide a string 'text'." },
+        400
+      );
+    }
+
+    const result = text
+      .normalize('NFKD')
+      .toLowerCase()
+      .trim()
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return c.json({
+      success: true,
+      result,
+      payment: {
+        txId: payment?.settleResult?.txId,
+        sender: payment?.payerAddress,
+      },
+    });
+  }
+);
+// Generates random strings or integers (tier: simple)
+app.post('/api/random',
+  x402Middleware({
+    amount: '1000',
+    tokenType: 'STX',
+  }),
+  async (c) => {
+    const payment = c.get('x402');
+
+    const body = await c.req.json().catch(() => ({}));
+    const type =
+      typeof body === 'object' && body !== null && 'type' in body
+        ? (body as Record<string, unknown>).type
+        : undefined;
+
+    if (type === 'string') {
+      const length =
+        typeof body === 'object' && body !== null && 'length' in body
+          ? (body as Record<string, unknown>).length
+          : undefined;
+
+      if (
+        typeof length !== 'number' ||
+        !Number.isInteger(length) ||
+        length < 1 ||
+        length > 256
+      ) {
+        return c.json(
+          { success: false, error: "For type 'string', length must be an integer from 1 to 256." },
+          400
+        );
+      }
+
+      const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const random = new Uint32Array(length);
+      crypto.getRandomValues(random);
+
+      const result = Array.from(random)
+        .map((value) => chars[value % chars.length])
+        .join('');
+
+      return c.json({
+        success: true,
+        type,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    }
+
+    if (type === 'integer') {
+      const min =
+        typeof body === 'object' && body !== null && 'min' in body
+          ? (body as Record<string, unknown>).min
+          : undefined;
+      const max =
+        typeof body === 'object' && body !== null && 'max' in body
+          ? (body as Record<string, unknown>).max
+          : undefined;
+
+      if (
+        typeof min !== 'number' ||
+        typeof max !== 'number' ||
+        !Number.isInteger(min) ||
+        !Number.isInteger(max) ||
+        min > max
+      ) {
+        return c.json(
+          { success: false, error: "For type 'integer', provide integer 'min' and 'max' with min <= max." },
+          400
+        );
+      }
+
+      const range = max - min + 1;
+
+      if (range <= 0 || range > 4294967296) {
+        return c.json(
+          { success: false, error: 'Integer range is too large.' },
+          400
+        );
+      }
+
+      const random = new Uint32Array(1);
+      crypto.getRandomValues(random);
+
+      const result = min + (random[0] % range);
+
+      return c.json({
+        success: true,
+        type,
+        result,
+        payment: {
+          txId: payment?.settleResult?.txId,
+          sender: payment?.payerAddress,
+        },
+      });
+    }
+
+    return c.json(
+      { success: false, error: "Use type 'string' or 'integer'." },
+      400
+    );
+  }
+);
+
+
 // Public AIBTC agent metadata (free)
 app.get('/metadata.json', (c) => {
   return c.json({

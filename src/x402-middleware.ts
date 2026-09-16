@@ -141,6 +141,7 @@ type Env = {
   RECIPIENT_ADDRESS: string;
   NETWORK: string;
   RELAY_URL: string;
+  DEV_BYPASS?: string;
 };
 
 /**
@@ -267,7 +268,7 @@ export function x402Middleware(config: X402Config) {
     c.set('x402', {
       payerAddress,
       settleResult,
-      signedTx,
+      signedTx: signedTx ?? 'dev-bypass',
     });
 
     // Add response headers
