@@ -2,6 +2,9 @@
 x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
 
 **Live API:** https://koyori-utils-api.koyori-aibtc.workers.dev  
+**OpenAPI:** https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json
+**Metadata:** https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json
+**AI Guide:** https://koyori-utils-api.koyori-aibtc.workers.dev/llms.txt
 **Price:** 0.001 STX per paid request
 
 ## Available Tools

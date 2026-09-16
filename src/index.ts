@@ -985,6 +985,172 @@ app.post('/api/random',
 );
 
 
+// Public OpenAPI specification (free)
+app.get('/openapi.json', (c) => {
+  return c.json({
+    openapi: '3.1.0',
+    info: {
+      title: 'Koyori Utils API',
+      version: '1.0.0',
+      description: 'Lightweight x402-powered developer utilities on Stacks mainnet.'
+    },
+    servers: [
+      {
+        url: 'https://koyori-utils-api.koyori-aibtc.workers.dev'
+      }
+    ],
+    paths: {
+      '/api/hash': {
+        post: {
+          summary: 'Create a SHA-256 hash',
+          description: 'Hashes UTF-8 text with SHA-256. Requires x402 payment of 0.001 STX.',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['text'],
+                  properties: {
+                    text: { type: 'string' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            '200': { description: 'Successful hash response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/format': {
+        post: {
+          summary: 'Format JSON',
+          description: 'Validates and pretty-prints a JSON string. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Formatted JSON response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/count': {
+        post: {
+          summary: 'Count text',
+          description: 'Counts characters, words, and UTF-8 bytes. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Count response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/uuid': {
+        post: {
+          summary: 'Generate UUID v4',
+          description: 'Generates a UUID v4. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'UUID response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/base64': {
+        post: {
+          summary: 'Base64 encode/decode',
+          description: 'Encodes or decodes Base64. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Base64 response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/url-encode': {
+        post: {
+          summary: 'URL encode/decode',
+          description: 'Encodes or decodes URL components. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'URL encode/decode response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/hex': {
+        post: {
+          summary: 'Hex encode/decode',
+          description: 'Encodes or decodes hexadecimal text. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Hex response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/timestamp': {
+        post: {
+          summary: 'Convert timestamps',
+          description: 'Converts between Unix timestamps and ISO dates. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Timestamp conversion response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/slug': {
+        post: {
+          summary: 'Generate slug',
+          description: 'Creates a URL-friendly slug. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Slug response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      },
+      '/api/random': {
+        post: {
+          summary: 'Generate random value',
+          description: 'Generates a random string or integer. Requires x402 payment of 0.001 STX.',
+          responses: {
+            '200': { description: 'Random value response' },
+            '402': { description: 'Payment Required' }
+          }
+        }
+      }
+    }
+  });
+});
+
+// AI-readable service summary (free)
+app.get('/llms.txt', (c) => {
+  return c.text(`# Koyori Utils API
+
+Koyori Utils API is a lightweight x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
+
+Base URL:
+https://koyori-utils-api.koyori-aibtc.workers.dev
+
+OpenAPI:
+https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json
+
+Metadata:
+https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json
+
+Price:
+0.001 STX per paid request
+
+Available tools:
+- SHA-256 hashing
+- JSON formatting
+- Character, word, and byte counting
+- UUID v4 generation
+- Base64 encode/decode
+- URL encode/decode
+- Hex encode/decode
+- Unix/ISO timestamp conversion
+- URL-friendly slug generation
+- Random string/integer generation
+
+Paid endpoints return HTTP 402 Payment Required when called without a valid x402 payment.
+`);
+});
 // Public AIBTC agent metadata (free)
 app.get('/metadata.json', (c) => {
   return c.json({
@@ -995,6 +1161,8 @@ app.get('/metadata.json', (c) => {
       'https://koyori-utils-api.koyori-aibtc.workers.dev',
     api_url:
       'https://koyori-utils-api.koyori-aibtc.workers.dev',
+    openapi_url:
+      'https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json',
     services: [
       'SHA-256 hashing',
       'JSON formatting',
