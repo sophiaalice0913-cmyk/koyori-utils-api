@@ -1,4 +1,19 @@
 # koyori-utils-api
+A lightweight utility API powered by **x402 payments** on Stacks mainnet.
+
+## 🚀 Quick Start
+**Base URL:** `https://koyori-utils-api.koyori-aibtc.workers.dev`
+**Price:** `0.001 STX` per request
+
+**Example: SHA-256 Hashing**
+```bash
+curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/hash \
+  -H "Content-Type: application/json" \
+  -d '{"text":"hello"}'
+```
+
+**Resources:** [OpenAPI](/openapi.json) · [Metadata](/metadata.json) · [AI Guide](/llms.txt) · [Source](https://github.com/sophiaalice0913-cmyk/koyori-utils-api)
+
 x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
 
 **Live API:** https://koyori-utils-api.koyori-aibtc.workers.dev  
