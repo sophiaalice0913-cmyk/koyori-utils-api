@@ -46,6 +46,7 @@ export interface X402Context {
 }
 
 interface PaymentRequirement {
+  amount: string;
   maxAmountRequired: string;
   resource: string;
   payTo: string;
@@ -177,16 +178,23 @@ export function x402Middleware(config: X402Config) {
         tokenContract = TOKEN_CONTRACTS[network][tokenType];
       }
 
+      const nonce = crypto.randomUUID();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
       const paymentReq: PaymentRequirement = {
+        amount: config.amount,
         maxAmountRequired: config.amount,
         resource: c.req.path,
         payTo: recipientAddress,
         network,
-        nonce: crypto.randomUUID(),
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        nonce,
+        expiresAt,
         tokenType,
         ...(tokenContract && { tokenContract }),
       };
+
+      // Set WWW-Authenticate header to comply with x402 v2 specifications
+      c.header('WWW-Authenticate', `X402 payTo="${recipientAddress}", amount="${config.amount}", tokenType="${tokenType}", resource="${c.req.path}", network="${network}", nonce="${nonce}", expiresAt="${expiresAt}"`);
 
       return c.json(paymentReq, 402);
     }

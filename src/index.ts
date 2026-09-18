@@ -1120,41 +1120,42 @@ app.get('/openapi.json', (c) => {
 
 // AI-readable service summary (free)
 app.get('/llms.txt', (c) => {
-  return c.text(`# Koyori Utils API
-
-Koyori Utils API is a lightweight x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
-
-Base URL:
-https://koyori-utils-api.koyori-aibtc.workers.dev
-
-OpenAPI:
-https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json
-
-Metadata:
-https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json
-
-Price:
-0.001 STX per paid request
-
-Available tools:
-- SHA-256 hashing
-- JSON formatting
-- Character, word, and byte counting
-- UUID v4 generation
-- Base64 encode/decode
-- URL encode/decode
-- Hex encode/decode
-- Unix/ISO timestamp conversion
-- URL-friendly slug generation
-- Random string/integer generation
-
-Paid endpoints return HTTP 402 Payment Required when called without a valid x402 payment.
-`);
+  return c.text([
+    '# Koyori Utils API',
+    '',
+    'Koyori Utils API is a lightweight x402-powered utility API running on Cloudflare Workers.',
+    '',
+    'Base URL:',
+    'https://koyori-utils-api.koyori-aibtc.workers.dev',
+    '',
+    'OpenAPI:',
+    'https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json',
+    '',
+    'Metadata:',
+    'https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json',
+    '',
+    'Price:',
+    '0.001 STX per paid request',
+    '',
+    'Available tools:',
+    '- SHA-256 hashing',
+    '- JSON formatting',
+    '- Character, word, and byte counting',
+    '- UUID v4 generation',
+    '- Base64 encode/decode',
+    '- URL encode/decode',
+    '- Hex encode/decode',
+    '- Unix/ISO timestamp conversion',
+    '- URL-friendly slug generation',
+    '- Random string/integer generation',
+    '',
+    'Paid endpoints return HTTP 402 Payment Required when called without a valid x402 payment.'
+  ].join('\n'));
 });
 // Public AIBTC agent metadata (free)
 app.get('/metadata.json', (c) => {
   return c.json({
-    name: 'Somber Saber',
+    name: 'Koyori Utils API',
     description:
       'AIBTC agent providing lightweight x402-powered developer utilities on Stacks mainnet.',
     website:
