@@ -1,277 +1,105 @@
-# koyori-utils-api
-A lightweight utility API powered by **x402 payments** on Stacks mainnet.
+# Koyori Utils API
 
-## 🚀 Quick Start
-**Base URL:** `https://koyori-utils-api.koyori-aibtc.workers.dev`
-**Price:** `0.001 STX` per request
+A lightweight x402-powered utility API with **60 endpoints** for developers, bots, and AI agents.
 
-**Example: SHA-256 Hashing**
-```bash
-curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/hash \
-  -H "Content-Type: application/json" \
-  -d '{"text":"hello"}'
-```
+## Live API
 
-**Resources:** [OpenAPI](/openapi.json) · [Metadata](/metadata.json) · [AI Guide](/llms.txt) · [Source](https://github.com/sophiaalice0913-cmyk/koyori-utils-api)
-
-x402-powered utility API running on Cloudflare Workers and Stacks mainnet.
-
-**Live API:** https://koyori-utils-api.koyori-aibtc.workers.dev  
-**OpenAPI:** https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json
-**Metadata:** https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json
-**AI Guide:** https://koyori-utils-api.koyori-aibtc.workers.dev/llms.txt
-**Price:** 0.001 STX per paid request
-
-## Available Tools
-
-- SHA-256 hashing
-- JSON formatting
-- Character / word / byte counting
-- UUID v4 generation
-- Base64 encode / decode
-- URL encode / decode
-- Hex encode / decode
-- Unix / ISO timestamp conversion
-- URL-friendly slug generation
-- Random string / integer generation
-
-Built for developers, bots, and AI agents that need small utility functions with x402 payments.
-
-Built using patterns from:
-- [x402-api](https://github.com/aibtcdev/x402-api)
-- [stx402](https://github.com/whoabuddy/stx402)
-
-## Live Endpoints (Production)
-
-The API is deployed and live on mainnet:
-
-*   **Base URL:** `https://koyori-utils-api.koyori-aibtc.workers.dev`
-*   **Cost:** `0.001 STX` (1000 micro-STX) per request.
-*   **Payment Flow:** Unauthenticated requests made without a payment signature will return an HTTP `402 Payment Required` response containing the exact payment requirements (including `payTo` address, `maxAmountRequired` in micro-STX, and other parameters).
-
-### 1. SHA-256 Hashing (`/api/hash`)
-Generates a secure SHA-256 hash of the provided input string.
-
-**Illustrative Request (returns HTTP 402 Payment Required):**
-
-```bash
-curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/hash \
-  -H "Content-Type: application/json" \
-  -d '{"text":"hello"}'
-```
-
-**Example body:**
-
-```json
-{
-  "text": "hello"
-}
-```
-
-### 2. JSON Formatting (`/api/format`)
-Validates and beautifies raw JSON strings.
-
-**Illustrative Request (returns HTTP 402 Payment Required):**
-```bash
-curl -X POST https://koyori-utils-api.koyori-aibtc.workers.dev/api/format \
-  -H "Content-Type: application/json" \
-  -d '{"jsonString": "{\"key\": \"value\"}"}'
-```
-
-## Quick Start
-
-### Live API
-
+**Base URL:**  
 https://koyori-utils-api.koyori-aibtc.workers.dev
 
-### SHA-256 Hashing
+**Price:**  
+**0.001 STX per paid request**
 
-`POST /api/hash`
+No subscription. No hidden fees.
 
-Example body:
+## Why use Koyori Utils API?
 
-```json
-{
-  "text": "hello"
-}
-```
+- 60 lightweight utility endpoints
+- Built for developers, bots, and AI agents
+- x402 payments on Stacks mainnet
+- OpenAPI support
+- AI-readable `llms.txt`
+- Machine-readable `metadata.json`
+- Source code available on GitHub
+- Runs on Cloudflare Workers
 
-### JSON Formatting
+## Popular APIs
+
+- JSON formatting
+- SHA-256 hashing
+- Web page fetching
+- Text replacement
+- CSV to JSON
+- JSON to CSV
+- Base64 encode / decode
+- URL encode / decode
+- UUID v4 generation
+- Text statistics
+- Text search
+- Metadata extraction
+
+## 1-minute example
+
+Use the JSON Formatter to turn messy JSON into clean, readable JSON.
+
+**Endpoint**
 
 `POST /api/format`
 
-Example body:
+**Example request body**
 
 ```json
 {
-  "jsonString": "{\"key\":\"value\"}"
+  "json": "{\"name\":\"Koyori\",\"tools\":60}"
 }
 ```
-### Character / Word / Byte Count
 
-`POST /api/count`
-
-Example body:
+**Result**
 
 ```json
 {
-  "text": "hello world"
+  "name": "Koyori",
+  "tools": 60
 }
 ```
 
-Returns the number of characters, words, and UTF-8 bytes in the provided text.
+## Available Tools
 
-### UUID v4 Generation
+Koyori Utils API includes utilities for:
 
-`POST /api/uuid`
+- Text transformation and cleanup
+- Case conversion
+- JSON / CSV conversion
+- Base64 / Base64URL / Hex / URL encoding
+- Markdown / HTML conversion
+- SHA-256 hashing
+- UUID generation
+- Random values
+- Timestamp conversion
+- URL parsing
+- JWT decoding
+- Regex testing
+- Web fetching
+- Link extraction
+- Page information
+- Metadata extraction
+- Text search and analysis
 
-Generates a random UUID v4 identifier.
+See the OpenAPI specification for the full endpoint list and request schemas.
 
-Example response:
+## AI Agent Resources
 
-```json
-{
-  "success": true,
-  "uuid": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
-### Base64 Encode / Decode
+**OpenAPI**  
+https://koyori-utils-api.koyori-aibtc.workers.dev/openapi.json
 
-`POST /api/base64`
+**AI Guide (`llms.txt`)**  
+https://koyori-utils-api.koyori-aibtc.workers.dev/llms.txt
 
-Encodes UTF-8 text to Base64 or decodes Base64 back to UTF-8 text.
+**Metadata**  
+https://koyori-utils-api.koyori-aibtc.workers.dev/metadata.json
 
-Encode example:
+These resources help AI agents discover and understand the available tools.
 
-```json
-{
-  "action": "encode",
-  "text": "hello"
-}
-```
-
-Decode example:
-
-```json
-{
-  "action": "decode",
-  "text": "aGVsbG8="
-}
-```
-### URL Encode / Decode
-
-`POST /api/url-encode`
-
-Encodes text for safe use inside a URL component or decodes URL-encoded text back to its original form.
-
-Encode example:
-
-```json
-{
-  "action": "encode",
-  "text": "hello world"
-}
-```
-
-Decode example:
-
-```json
-{
-  "action": "decode",
-  "text": "hello%20world"
-}
-```
-### Hex Encode / Decode
-
-`POST /api/hex`
-
-Encodes UTF-8 text to hexadecimal or decodes hexadecimal back to UTF-8 text.
-
-Encode example:
-
-```json
-{
-  "action": "encode",
-  "text": "hello"
-}
-```
-
-Decode example:
-
-```json
-{
-  "action": "decode",
-  "text": "68656c6c6f"
-}
-```
-### Unix / ISO Timestamp Conversion
-
-`POST /api/timestamp`
-
-Converts Unix timestamps in seconds to ISO date strings, or ISO date strings to Unix timestamps.
-
-Unix to ISO example:
-
-```json
-{
-  "action": "to-iso",
-  "value": 1757894400
-}
-```
-
-ISO to Unix example:
-
-```json
-{
-  "action": "to-unix",
-  "value": "2025-09-15T00:00:00.000Z"
-}
-```
-### URL-Friendly Slug Generation
-
-`POST /api/slug`
-
-Converts text into a lowercase, URL-friendly slug.
-
-Example:
-
-```json
-{
-  "text": "Hello World!"
-}
-```
-
-Example result:
-
-```json
-{
-  "result": "hello-world"
-}
-```
-### Random String / Integer Generation
-
-`POST /api/random`
-
-Generates a random alphanumeric string or a random integer within a specified range.
-
-Random string example:
-
-```json
-{
-  "type": "string",
-  "length": 12
-}
-```
-
-Random integer example:
-
-```json
-{
-  "type": "integer",
-  "min": 1,
-  "max": 100
-}
-```
 ## Payment
 
 Paid endpoints use x402.
@@ -282,9 +110,8 @@ Requests without a valid payment return:
 
 The response contains the current payment requirements, including the recipient address, required amount, network, and token type.
 
-Current price:
-
-**0.001 STX per request**
+**Current price:**  
+**0.001 STX per paid request**
 
 ## Health Check
 
@@ -294,10 +121,10 @@ Returns the current service status.
 
 ## Source
 
-Live service:
-
+**Live service**  
 https://koyori-utils-api.koyori-aibtc.workers.dev
 
-GitHub:
-
+**GitHub**  
 https://github.com/sophiaalice0913-cmyk/koyori-utils-api
+
+Built with Cloudflare Workers, x402, and Stacks mainnet.
