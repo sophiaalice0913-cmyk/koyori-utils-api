@@ -28,6 +28,10 @@ The API catalog covers utility tasks such as:
 
 **Browse the live catalog and OpenAPI specification for the actual supported endpoints and request schemas.** This README is a guide to the service, not an exhaustive list of 20,000 operations.
 
+## Hands-on AI agent example
+
+Try the [read-only AI agent API discovery example](docs/AI_AGENT_DISCOVERY_EXAMPLE.md). It includes a runnable Python example for inspecting the public catalog and OpenAPI without making purchases, signing transactions, or calling paid operations.
+
 ## For developers and AI agents
 
 1. **Discover** an appropriate operation in the [AI catalog](https://koyori-utils-api.koyori-aibtc.workers.dev/agents/catalog).
