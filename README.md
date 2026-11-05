@@ -17,6 +17,10 @@ Koyori Utils API provides utility APIs and AI-friendly discovery resources, with
 | **AI-readable overview** | [llms.txt](https://koyori-utils-api.koyori-aibtc.workers.dev/llms.txt) |
 | **Service status** | [Health Check](https://koyori-utils-api.koyori-aibtc.workers.dev/health) |
 
+## Evaluate before purchasing
+
+For developers and AI agents, see the [AI agent evaluation and purchase guide](docs/AI_AGENT_EVALUATION_AND_PURCHASE.md) for a discovery-first workflow, Base USDC vs. STX payment choices, and safe approval steps.
+
 ## Base USDC purchase options (Base network)
 
 The live service also provides browser checkout pages for these Base USDC plans:
