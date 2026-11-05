@@ -17,6 +17,18 @@ Koyori Utils API provides utility APIs and AI-friendly discovery resources, with
 | **AI-readable overview** | [llms.txt](https://koyori-utils-api.koyori-aibtc.workers.dev/llms.txt) |
 | **Service status** | [Health Check](https://koyori-utils-api.koyori-aibtc.workers.dev/health) |
 
+## Base USDC purchase options (Base network)
+
+The live service also provides browser checkout pages for these Base USDC plans:
+
+| Plan | Listed price | Listed request allowance | Checkout |
+| --- | ---: | ---: | --- |
+| Starter | 1.30 USDC | 5,000 | [Open Starter checkout](https://koyori-utils-api.koyori-aibtc.workers.dev/base-starter/buy?plan=starter) |
+| Pro | 2.30 USDC | 10,000 | [Open Pro checkout](https://koyori-utils-api.koyori-aibtc.workers.dev/base-starter/buy?plan=pro) |
+| Developer | 16.00 USDC | 100,000 | [Open Developer checkout](https://koyori-utils-api.koyori-aibtc.workers.dev/base-starter/buy?plan=developer) |
+
+These are Base-network **USDC** options, separate from the **STX** subscription flow. Confirm the current price, network, wallet requirements, and payment terms on the live checkout before proceeding. Checkout pages have been confirmed to respond, but this README does **not** claim an independently verified end-to-end paid purchase. Never repeat a payment automatically while confirmation is pending.
+
 ## What can you build?
 
 The API catalog covers utility tasks such as:
